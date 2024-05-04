@@ -1,0 +1,8 @@
+streamlit
+deap
+numpy
+matplotlib
+seaborn
+pandas
+scipy
+networkx
