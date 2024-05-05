@@ -5,7 +5,7 @@ import random
 import matplotlib.pyplot as plt
 import seaborn as sns
 
-from deap_expansion import eaGambit, gambiteval, prisonDilemmaEval, evalTournamentGambit, evalAccumulatedTournmanetGambit, selRankedPaired, selLiteralToFitness
+from deap_expansion import eaGambit, gambiteval, prisonDilemmaEval, evalTournamentGambit, evalAccumulatedTournmanetGambit, selRankedPaired, selLiteralToFitness, selWithRankedPopulationCurved
 
 INITIAL_COOPERATIE_RATE = .8
 START_WITH_PURE_STRATEGIES = True
@@ -86,6 +86,15 @@ def gambitGeneticSimulation(both_coop=2, both_defect_winner=1, mixed_coop=0, mix
     }
     toolbox.register("encounterEval", evalMap[encounterEval], both_coop=both_coop, both_defect_winner=both_defect_winner, mixed_coop=mixed_coop, mixed_defect=mixed_defect)
     toolbox.register("evaluate", evaluate )
+    
+    
+    def returnSharedSettings():
+        return {
+            "population_limit": POPULATION_LIMIT,
+            "encounters_per_lifetime": 5
+        }
+    
+    toolbox.register("settings", returnSharedSettings)
 
     population = []
     if START_WITH_PURE_STRATEGIES:
@@ -102,6 +111,7 @@ def gambitGeneticSimulation(both_coop=2, both_defect_winner=1, mixed_coop=0, mix
         
         toolbox.register("populationCreator", tools.initRepeat, list, toolbox.cooperatorCreator)
         population.extend(toolbox.populationCreator(n=int(POPULATION_SIZE * INITIAL_COOPERATIE_RATE)))
+        
         
         # Create the population of defectors:
         toolbox.register("defectorCooperator", tools.initRepeat, creator.Individual, toolbox.pure_ones, GEN_SIZE)
@@ -236,6 +246,22 @@ precurated_cases = {
         "select": selRankedPaired,
         "curvePopulation": True        
     },
+     "majority_cooperative_advantage_cruved": {
+        "lore": "Variant of class_prisonner, where confrontation rewards are lower.",
+        "encounterEval": "prisonDilemmaEval",
+        "INITIAL_COOPERATIE_RATE": .3,
+        "POPULATION_SIZE": 10,
+        "both_coop": 3,
+        "mixed_coop": 0,
+        "mixed_defect": 5,
+        "both_defect_winner": 1,
+        "P_CROSSOVER": 0.3,
+        "P_MUTATION": 0.1,
+        "evaluate": evalAccumulatedTournmanetGambit,
+        "select": selWithRankedPopulationCurved,
+        "curvePopulation": True,
+        "POPULATION_LIMIT": 100000
+    },
       "game life": {
         "lore": "Variant of class_prisonner, where confrontation rewards are lower.",
         "encounterEval": "prisonDilemmaEval",
@@ -258,7 +284,7 @@ precurated_cases = {
 
 # population, coop_pop, defect_pop = gambitGeneticSimulation(POPULATION_SIZE=POPULATION_SIZE, P_CROSSOVER=P_CROSSOVER, P_MUTATION=P_MUTATION, FLIPBIT_MUTATION_PROB=FLIPBIT_MUTATION_PROB, MAX_GENERATIONS=MAX_GENERATIONS, POPULATION_LIMIT=POPULATION_LIMIT, GEN_SIZE=GEN_SIZE, RANDOM_SEED=RANDOM_SEED)
 
-case = "majority_cooperative_advantage"
+case = "majority_cooperative_advantage_cruved"
 population, coop_pop, defect_pop = gambitGeneticSimulation(**precurated_cases[case])
 
 # plot statistics:

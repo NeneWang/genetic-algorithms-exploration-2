@@ -129,10 +129,9 @@ def evalAccumulatedTournmanetGambit(individuals, toolbox, k=100, defaultEncounte
     """
     
     
-    if (hasattr(toolbox, "encounterEval")):
-        encounterEval = toolbox.encounterEval
-    else:
-        encounterEval = defaultEncounterEval
+    if hasattr(toolbox, "settings"):
+        settingsDict = toolbox.settings()
+        k = settingsDict["encounters_per_lifetime"]
     
     # Increase or reduce the fitness of the individuals, depending on the strategy.
     for tournament_round in range(k):
@@ -149,7 +148,7 @@ def evalAccumulatedTournmanetGambit(individuals, toolbox, k=100, defaultEncounte
             strategyInd1 = determineStrategyWithMajority(individual1)
             strategyInd2 = determineStrategyWithMajority(individual2)
 
-            fitnessInd1Inc, fitnessInd2Inc = encounterEval(strategyInd1, strategyInd2)
+            fitnessInd1Inc, fitnessInd2Inc = toolbox.encounterEval(strategyInd1, strategyInd2)
             originalFitnessInd1 = individual1.fitness.values[0]
             originalFitnessInd2 = individual2.fitness.values[0]
             
@@ -175,7 +174,7 @@ def selLiteralToFitness(individuals):
     random.shuffle(chosen)
     return chosen
     
-def selRankedPaired(individuals, k=100):
+def selRankedPaired(individuals, k=5, toolbox=None):
     """
     Use fitness to rank half of the individuals as female (no requirement to select.)
     Allows more resources to the top members k, is the times an gambit torunament is played. to balance.
@@ -191,9 +190,14 @@ def selRankedPaired(individuals, k=100):
     
     """
     chosen = []
+    if hasattr(toolbox, "settings"):
+        settingsDict = toolbox.settings()
+        k = settingsDict["encounters_per_lifetime"]
+    
     # Sort the individuals by fitness.
     individuals = sorted(individuals, key=lambda x: x.fitness.values[0], reverse=True)
     
+        
     # Allow more repetitions for the top ranked individuals.
     for i in range(0, len(individuals), 2):
         if i + 1 >= len(individuals):
@@ -211,25 +215,55 @@ def selRankedPaired(individuals, k=100):
         for _ in range(repeat):
             chosen.append(individual1)
             chosen.append(individual2)
-    
     return chosen
 
-def selWithPopulationControl(individuals, population_limit):
+def selWithRankedPopulationCurved(individuals,toolbox=None, k=5):
     """
     Prioritizes reproduction of the top individuals.
+    As population approaches the limit, the skipping of individuals is more likely.
     They have higher change
     """
     # Sort the individuals by fitness.
     chosen = []
+    population_limit=10000
+    
+    if hasattr(toolbox, "settings"):
+        settingsDict = toolbox.settings()
+        population_limit = settingsDict["population_limit"]
+        k = settingsDict["encounters_per_lifetime"]
+    
     individuals = sorted(individuals, key=lambda x: x.fitness.values[0], reverse=True)
+    # print(f"Individuals: {len(individuals)}")
+    # print("Example", individuals[0].fitness.values[0])
     
     for i in range(0, len(individuals), 2):
         if i + 1 >= len(individuals):
             break
+        
+        if len(chosen) >= population_limit:
+            # print(f" Broken population limit: {len(chosen)}")
+            break
+        skip_chance = 1 - (len(chosen) / population_limit)
+        # Skip chance increases as the population approaches the limit.
+        if random.random() > skip_chance:
+            # print(f"Skipped at skip chance: {skip_chance} f{random.random()}")
+            continue
+        
         individual1 = individuals[i]
         individual2 = individuals[i+1]
-        chosen.append(individual1)
-        chosen.append(individual2)
+        pair_score = individual1.fitness.values[0] + individual2.fitness.values[0]
+        
+        repeat = 0
+        if pair_score > 3*k:
+            repeat = 5
+        else:
+            repeat = int(pair_score//k)
+        
+        for _ in range(repeat):
+            chosen.append(individual1)
+            chosen.append(individual2)
+    # print(f"Chosen: {len(chosen)}")
+    return chosen
 
 def simpleVarAnd(population, toolbox, cxpb, mutpb):
     """
