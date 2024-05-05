@@ -143,14 +143,30 @@ def gambitGeneticSimulation(both_coop=2, both_defect_winner=1, mixed_coop=0, mix
 
 
 precurated_cases = {
-    "class_prisonner": {
-        "lore": "The classic prisoner's dilemma is a game theory example that shows why two completely rational individuals might not cooperate, even if it appears that it is in their best interest to do so. The game is set up so that both players choose to either cooperate or defect. The payoffs are structured so that if both players cooperate, they both receive a payoff. If one player defects while the other cooperates, the defector receives a higher payoff while the cooperator receives the lowest payoff. If both players defect, they both receive a payoff, but it is lower than if they had both cooperated.",
+    "be1.tribal_hunters": {
+        "lore": "BE1 Base Case Tribal Hunters",
         "both_coop": 2,
         "mixed_coop": 0,
         "mixed_defect": 3,
+        "both_defect_winner": 1,
+        "POPULATION_SIZE": 100,
         "INITIAL_COOPERATIE_RATE": .5,
         "P_CROSSOVER": 0.0,
         "P_MUTATION": 0.0,
+        "RANDOMIZE_SEED": False,
+        "encounterEval": "prisonDilemmaEval"
+    },
+     "be1b.tribal_hunters": {
+        "lore": "BE1 Base Case Tribal Hunters",
+        "both_coop": 2,
+        "mixed_coop": 0,
+        "mixed_defect": 3,
+        "both_defect_winner": 1,
+        "POPULATION_SIZE": 100,
+        "INITIAL_COOPERATIE_RATE": .9,
+        "P_CROSSOVER": 0.0,
+        "P_MUTATION": 0.0,
+        "RANDOMIZE_SEED": False,
         "encounterEval": "prisonDilemmaEval"
     },
     "friendly_prisoner": {
@@ -254,7 +270,7 @@ precurated_cases = {
         "both_coop": 3,
         "mixed_coop": 0,
         "mixed_defect": 5,
-        "both_defect_winner": 1,
+        "both_defect_winner": 16,
         "P_CROSSOVER": 0.3,
         "P_MUTATION": 0.1,
         "evaluate": evalAccumulatedTournmanetGambit,
@@ -284,7 +300,7 @@ precurated_cases = {
 
 # population, coop_pop, defect_pop = gambitGeneticSimulation(POPULATION_SIZE=POPULATION_SIZE, P_CROSSOVER=P_CROSSOVER, P_MUTATION=P_MUTATION, FLIPBIT_MUTATION_PROB=FLIPBIT_MUTATION_PROB, MAX_GENERATIONS=MAX_GENERATIONS, POPULATION_LIMIT=POPULATION_LIMIT, GEN_SIZE=GEN_SIZE, RANDOM_SEED=RANDOM_SEED)
 
-case = "majority_cooperative_advantage_cruved"
+case = "be1b.tribal_hunters"
 population, coop_pop, defect_pop = gambitGeneticSimulation(**precurated_cases[case])
 
 # plot statistics:
