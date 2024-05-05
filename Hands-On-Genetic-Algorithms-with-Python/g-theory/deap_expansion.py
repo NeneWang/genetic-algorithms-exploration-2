@@ -3,9 +3,11 @@ from deap import algorithms
 import pprint
 import random
 
+AGGRESIVE = "AGGRESIVE"
+COOPERATIVE = "COOPERATIVE"
 
 
-def determineStrategy(individual):
+def determineStrategyWithMajority(individual):
     """
     The strategy is determined by the majority of the genes.
     - if majorty(gen) == 0 => COOPERATE
@@ -14,10 +16,28 @@ def determineStrategy(individual):
     count1 = sum([1 for i in individual if i == 1])
     count0 = sum([1 for i in individual if i == 0])
     if count1 > count0:
-        return "AGGRESIVE"
+        return AGGRESIVE
     else:
-        return "COOPERATIVE"
+        return COOPERATIVE
 
+def determineStrategyWithDominantRecessive(individual, limit=4):
+    """
+    The strategy is determine as:
+    
+    G | 1 | 0
+    --|---|---
+    1 | A | C
+    0 | C | C
+    
+    """
+    
+    count0 = sum([1 for i in individual[:limit] if i == 0])
+    if count0 > 0:
+        return AGGRESIVE
+    else:
+        return COOPERATIVE
+    
+    
 
 def gambiteval(ind1strategy, ind2strategy, both_coop=2, both_defect_winner=1, mixed_coop=0, mixed_defect=3):
     """
@@ -26,13 +46,13 @@ def gambiteval(ind1strategy, ind2strategy, both_coop=2, both_defect_winner=1, mi
     """
     
     
-    if ind1strategy == "COOPERATIVE" and ind2strategy == "AGGRESIVE":
+    if ind1strategy == COOPERATIVE and ind2strategy == AGGRESIVE:
         return (mixed_coop, mixed_defect)
-    elif ind1strategy == "AGGRESIVE" and ind2strategy == "COOPERATIVE":
+    elif ind1strategy == AGGRESIVE and ind2strategy == COOPERATIVE:
         return (mixed_defect, mixed_coop)
-    elif ind1strategy == "COOPERATIVE" and ind2strategy == "COOPERATIVE":
+    elif ind1strategy == COOPERATIVE and ind2strategy == COOPERATIVE:
         return (both_coop, both_coop)
-    elif ind1strategy == "AGGRESIVE" and ind2strategy == "AGGRESIVE":
+    elif ind1strategy == AGGRESIVE and ind2strategy == AGGRESIVE:
         # return (0, 0)
         # 50% chance of winning or losing.
         return (random.choice([(both_defect_winner, 0), (0, both_defect_winner), (0, 0)]))
@@ -44,13 +64,13 @@ def prisonDilemmaEval(ind1strategy, ind2strategy, both_coop=2, both_defect_winne
     Fitness is evaluated in this case when two individuals face each other.
     https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSoZTbudsbpcG_COpZ-JYNcwpFwVOXz8OyawhO6Vw-7&s
     """
-    if ind1strategy == "COOPERATIVE" and ind2strategy == "AGGRESIVE":
+    if ind1strategy == COOPERATIVE and ind2strategy == AGGRESIVE:
         return (mixed_coop, mixed_defect)
-    elif ind1strategy == "AGGRESIVE" and ind2strategy == "COOPERATIVE":
+    elif ind1strategy == AGGRESIVE and ind2strategy == COOPERATIVE:
         return (mixed_defect, mixed_coop)
-    elif ind1strategy == "COOPERATIVE" and ind2strategy == "COOPERATIVE":
+    elif ind1strategy == COOPERATIVE and ind2strategy == COOPERATIVE:
         return (both_coop, both_coop)
-    elif ind1strategy == "AGGRESIVE" and ind2strategy == "AGGRESIVE":
+    elif ind1strategy == AGGRESIVE and ind2strategy == AGGRESIVE:
         return (both_defect_winner, both_defect_winner)
     else:
         raise ValueError("Invalid Strategy")
@@ -83,8 +103,8 @@ def evalTournamentGambit(individuals, toolbox, defaultEncounterEval=gambiteval):
         individual1 = individuals[i]
         individual2 = individuals[i+1]
         
-        strategyInd1 = determineStrategy(individual1)
-        strategyInd2 = determineStrategy(individual2)
+        strategyInd1 = determineStrategyWithMajority(individual1)
+        strategyInd2 = determineStrategyWithMajority(individual2)
 
         # fitnessInd1Inc, fitnessInd2Inc = gambiteval(strategyInd1, strategyInd2)
         fitnessInd1Inc, fitnessInd2Inc = encounterEval(strategyInd1, strategyInd2)
@@ -101,7 +121,7 @@ def evalTournamentGambit(individuals, toolbox, defaultEncounterEval=gambiteval):
     return chosen
 
 
-def evalAccumulatedTournmanetGambit(individuals, toolbox, k=5, defaultEncounterEval=gambiteval):
+def evalAccumulatedTournmanetGambit(individuals, toolbox, k=100, defaultEncounterEval=gambiteval):
     """
     Creates k * len(individuals) tournaments (an individual will have k encounters each)
     - Returns the count of indiividuals, with their corrected fitness values.
@@ -126,8 +146,8 @@ def evalAccumulatedTournmanetGambit(individuals, toolbox, k=5, defaultEncounterE
             individual1 = individuals[i]
             individual2 = individuals[i+1]
             
-            strategyInd1 = determineStrategy(individual1)
-            strategyInd2 = determineStrategy(individual2)
+            strategyInd1 = determineStrategyWithMajority(individual1)
+            strategyInd2 = determineStrategyWithMajority(individual2)
 
             fitnessInd1Inc, fitnessInd2Inc = encounterEval(strategyInd1, strategyInd2)
             originalFitnessInd1 = individual1.fitness.values[0]
@@ -155,6 +175,61 @@ def selLiteralToFitness(individuals):
     random.shuffle(chosen)
     return chosen
     
+def selRankedPaired(individuals, k=100):
+    """
+    Use fitness to rank half of the individuals as female (no requirement to select.)
+    Allows more resources to the top members k, is the times an gambit torunament is played. to balance.
+    
+    scores are added as a pair.
+    
+    resources allows as follows:
+    
+    a score of 3*k+ will allow 3 repetitions of the individual.
+    a score of 2*k  will allow 2 repetitions of the individual.
+    a score of 1*k  will allow 1 repetitions of the individual.
+    no score will  not allow any repetitions of the individual.
+    
+    """
+    chosen = []
+    # Sort the individuals by fitness.
+    individuals = sorted(individuals, key=lambda x: x.fitness.values[0], reverse=True)
+    
+    # Allow more repetitions for the top ranked individuals.
+    for i in range(0, len(individuals), 2):
+        if i + 1 >= len(individuals):
+            break
+        individual1 = individuals[i]
+        individual2 = individuals[i+1]
+        pair_score = individual1.fitness.values[0] + individual2.fitness.values[0]
+        
+        repeat = 0
+        if pair_score > 3*k:
+            repeat = 5
+        else:
+            repeat = int(pair_score//k)
+        
+        for _ in range(repeat):
+            chosen.append(individual1)
+            chosen.append(individual2)
+    
+    return chosen
+
+def selWithPopulationControl(individuals, population_limit):
+    """
+    Prioritizes reproduction of the top individuals.
+    They have higher change
+    """
+    # Sort the individuals by fitness.
+    chosen = []
+    individuals = sorted(individuals, key=lambda x: x.fitness.values[0], reverse=True)
+    
+    for i in range(0, len(individuals), 2):
+        if i + 1 >= len(individuals):
+            break
+        individual1 = individuals[i]
+        individual2 = individuals[i+1]
+        chosen.append(individual1)
+        chosen.append(individual2)
 
 def simpleVarAnd(population, toolbox, cxpb, mutpb):
     """
@@ -181,7 +256,7 @@ def simpleVarAnd(population, toolbox, cxpb, mutpb):
 
 
 def eaGambit(population, toolbox, cxpb, mutpb, ngen, stats=None,
-             halloffame=None, verbose=__debug__,  population_limit = 1000):
+             halloffame=None, verbose=__debug__,  population_limit = 1000, curvePopulation=True):
     """This algorithm is similar to DEAP eaSimple() algorithm, with the modification that:
     
     - Supports faceoff (gambit) between the population different strategies.
@@ -200,7 +275,7 @@ def eaGambit(population, toolbox, cxpb, mutpb, ngen, stats=None,
     defect_pop = 0
     
     for ind in population:
-        if determineStrategy(ind) == "COOPERATIVE":
+        if determineStrategyWithMajority(ind) == COOPERATIVE:
             coop_pop += 1
         else:
             defect_pop += 1
@@ -211,7 +286,7 @@ def eaGambit(population, toolbox, cxpb, mutpb, ngen, stats=None,
 
     # Begin the generational process
     for gen in range(1, ngen + 1):
-        if len(population) > population_limit:
+        if len(population) >= population_limit and not curvePopulation:
             break
         for ind in population:
             ind.fitness.values = (0,)
@@ -222,7 +297,10 @@ def eaGambit(population, toolbox, cxpb, mutpb, ngen, stats=None,
         toolbox.evaluate(population, toolbox=toolbox)
         
         # print(f"Offspring after tournamentSelection: {len(offspring)}")
-        population = selLiteralToFitness(population)
+        population = toolbox.select(population)
+        
+        if(curvePopulation):
+            population = population[:population_limit]
         
         # Vary the pool of individuals
         offspring = simpleVarAnd(population, toolbox, cxpb, mutpb)
@@ -239,7 +317,7 @@ def eaGambit(population, toolbox, cxpb, mutpb, ngen, stats=None,
         sample_defect_genes = ""
         
         for ind in population:
-            if determineStrategy(ind) == "COOPERATIVE":
+            if determineStrategyWithMajority(ind) == COOPERATIVE:
                 coop_pop += 1
                 # join list into string
                 sample_coop_genes = ''.join([str(i) for i in ind])

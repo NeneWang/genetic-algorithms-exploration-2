@@ -5,7 +5,7 @@ import random
 import matplotlib.pyplot as plt
 import seaborn as sns
 
-from deap_expansion import eaGambit, gambiteval, prisonDilemmaEval, evalTournamentGambit, evalAccumulatedTournmanetGambit
+from deap_expansion import eaGambit, gambiteval, prisonDilemmaEval, evalTournamentGambit, evalAccumulatedTournmanetGambit, selRankedPaired, selLiteralToFitness
 
 INITIAL_COOPERATIE_RATE = .8
 START_WITH_PURE_STRATEGIES = True
@@ -15,7 +15,7 @@ POPULATION_SIZE = 100
 P_CROSSOVER = 0.2  # probability for crossover
 P_MUTATION = 0.01   # probability for mutating an offspring individual
 MAX_GENERATIONS = 50
-POPULATION_LIMIT = 10000 # Simulation will stop if the population exceeds this limit.
+POPULATION_LIMIT = 50000 # Simulation will stop if the population exceeds this limit.
 GEN_SIZE = 5
 FLIPBIT_MUTATION_PROB = 1.0/GEN_SIZE
 
@@ -56,7 +56,7 @@ supported_reproduction_algorithm = [
 
 def gambitGeneticSimulation(both_coop=2, both_defect_winner=1, mixed_coop=0, mixed_defect=3, INITIAL_COOPERATIE_RATE=INITIAL_COOPERATIE_RATE,
                             START_WITH_PURE_STRATEGIES=START_WITH_PURE_STRATEGIES, RANDOMIZE_SEED=True, POPULATION_SIZE=POPULATION_SIZE, P_CROSSOVER=P_CROSSOVER, P_MUTATION=P_MUTATION, FLIPBIT_MUTATION_PROB=FLIPBIT_MUTATION_PROB, MAX_GENERATIONS=MAX_GENERATIONS, POPULATION_LIMIT=POPULATION_LIMIT, 
-                            GEN_SIZE=GEN_SIZE, RANDOM_SEED=RANDOM_SEED, lore="", encounterEval="prisonDilemmaEval", evaluate=evalAccumulatedTournmanetGambit) -> tuple:
+                            GEN_SIZE=GEN_SIZE, RANDOM_SEED=RANDOM_SEED, lore="", encounterEval="prisonDilemmaEval", evaluate=evalTournamentGambit, select=selLiteralToFitness, curvePopulation=True) -> tuple:
     
     if RANDOMIZE_SEED:
         RANDOM_SEED = random.randint(0, 10000)
@@ -108,6 +108,8 @@ def gambitGeneticSimulation(both_coop=2, both_defect_winner=1, mixed_coop=0, mix
         toolbox.register("populationCreator", tools.initRepeat, list, toolbox.defectorCooperator)
         population.extend(toolbox.populationCreator(n=int(POPULATION_SIZE * (1-INITIAL_COOPERATIE_RATE))))
                           
+        toolbox.register("select", select)
+        
         print(f"Created population with {len(population)} individuals. ")
     else:      
         toolbox.register("individualCreator", tools.initRepeat, creator.Individual, toolbox.zeroOrOne, GEN_SIZE)
@@ -119,7 +121,7 @@ def gambitGeneticSimulation(both_coop=2, both_defect_winner=1, mixed_coop=0, mix
 
     # perform the Genetic Algorithm flow with hof feature added:
     population, logbook =  eaGambit(population, toolbox, cxpb=P_CROSSOVER, mutpb=P_MUTATION,
-                                            ngen=MAX_GENERATIONS, verbose=True, population_limit=POPULATION_LIMIT)
+                                            ngen=MAX_GENERATIONS, verbose=True, population_limit=POPULATION_LIMIT, curvePopulation=curvePopulation)
 
 
     # extract statistics:
@@ -139,37 +141,116 @@ precurated_cases = {
         "INITIAL_COOPERATIE_RATE": .5,
         "P_CROSSOVER": 0.0,
         "P_MUTATION": 0.0,
-        "eval": "prisonDilemmaEval"
+        "encounterEval": "prisonDilemmaEval"
     },
     "friendly_prisoner": {
         "lore": "Variant of class_prisonner, where there are more prisonners to cooperate.",
-        "eval": "prisonDilemmaEval",
+        "encounterEval": "prisonDilemmaEval",
         "INITIAL_COOPERATIE_RATE": .8,
         "P_CROSSOVER": 0.0,
         "P_MUTATION": 0.0,
+        "POPULATION_LIMIT": 100000
+        
     },
     "friendly_motivated_prisoner": {
         "lore": "Variant of class_prisonner, where confrontation rewards are lower.",
-        "eval": "prisonDilemmaEval",
+        "encounterEval": "prisonDilemmaEval",
         "INITIAL_COOPERATIE_RATE": .5,
-        "both_coop": 2,
-        "mixed_coop": 2,
-        "mixed_defect": 0,
+        "both_coop": 3,
+        "mixed_coop": 0,
+        "mixed_defect": 2,
         "P_CROSSOVER": 0.0,
         "P_MUTATION": 0.0,
     },
     "long_term_prisoner": {
         "lore": "Variant of class_prisonner, where the game is played multiple times.",
-        "eval": "prisonDilemmaEval",
+        "encounterEval": "prisonDilemmaEval",
+        "INITIAL_COOPERATIE_RATE": .5,
+        "both_coop": 2, #4
+        "mixed_coop": 0,
+        "mixed_defect": 3, #3
+        "both_defect_winner": 1, #2
+        
+        "P_CROSSOVER": 0.2,
+        "P_MUTATION": 0.1,
+        "evaluate": evalAccumulatedTournmanetGambit,
+        "select": selRankedPaired,
+        "curvePopulation": True
+        
+    },
+    "long_term_friendly_prisoner": {
+        "lore": "Variant of class_prisonner, where confrontation rewards are lower.",
+        "encounterEval": "prisonDilemmaEval",
         "INITIAL_COOPERATIE_RATE": .5,
         "both_coop": 2,
         "mixed_coop": 0,
         "mixed_defect": 3,
+        "both_defect_winner": 0,
+        "P_CROSSOVER": 0.3,
+        "P_MUTATION": 0.1,
+        "evaluate": evalAccumulatedTournmanetGambit,
+        "select": selRankedPaired,
+        "curvePopulation": True        
+    },
+     "majority_cooperative": {
+        "lore": "Variant of class_prisonner, where confrontation rewards are lower.",
+        "encounterEval": "prisonDilemmaEval",
+        "INITIAL_COOPERATIE_RATE": .9,
+        "both_coop": 2,
+        "mixed_coop": 0,
+        "mixed_defect": 3,
+        "both_defect_winner": 0,
         "P_CROSSOVER": 0.0,
         "P_MUTATION": 0.0,
-        "eval": evalAccumulatedTournmanetGambit
+        "evaluate": evalAccumulatedTournmanetGambit,
+        "select": selRankedPaired,
+        "curvePopulation": True        
+    },
+     
+     "majority_cooperative_mutated": {
+        "lore": "Variant of class_prisonner, where confrontation rewards are lower.",
+        "encounterEval": "prisonDilemmaEval",
+        "INITIAL_COOPERATIE_RATE": .9,
+        "both_coop": 2,
+        "mixed_coop": 0,
+        "mixed_defect": 3,
+        "both_defect_winner": 0,
+        "P_CROSSOVER": 0.3,
+        "P_MUTATION": 0.1,
+        "evaluate": evalAccumulatedTournmanetGambit,
+        "select": selRankedPaired,
+        "curvePopulation": True        
+    },     
+     "majority_cooperative_advantage": {
+        "lore": "Variant of class_prisonner, where confrontation rewards are lower.",
+        "encounterEval": "prisonDilemmaEval",
+        "INITIAL_COOPERATIE_RATE": .3,
+        "POPULATION_SIZE": 10,
+        "both_coop": 3,
+        "mixed_coop": 0,
+        "mixed_defect": 5,
+        "both_defect_winner": 1,
+        "P_CROSSOVER": 0.3,
+        "P_MUTATION": 0.1,
+        "evaluate": evalAccumulatedTournmanetGambit,
+        "select": selRankedPaired,
+        "curvePopulation": True        
+    },
+      "game life": {
+        "lore": "Variant of class_prisonner, where confrontation rewards are lower.",
+        "encounterEval": "prisonDilemmaEval",
+        "INITIAL_COOPERATIE_RATE": .5,
+        "both_coop": 4,
+        "mixed_coop": 3,
+        "mixed_defect": 5,
+        "both_defect_winner": 1,
+        "P_CROSSOVER": 0.3,
+        "P_MUTATION": 0.1,
+        "evaluate": evalAccumulatedTournmanetGambit,
+        "select": selRankedPaired,
+        "curvePopulation": False        
+    },
         
-    }
         
 }
 
@@ -177,7 +258,7 @@ precurated_cases = {
 
 # population, coop_pop, defect_pop = gambitGeneticSimulation(POPULATION_SIZE=POPULATION_SIZE, P_CROSSOVER=P_CROSSOVER, P_MUTATION=P_MUTATION, FLIPBIT_MUTATION_PROB=FLIPBIT_MUTATION_PROB, MAX_GENERATIONS=MAX_GENERATIONS, POPULATION_LIMIT=POPULATION_LIMIT, GEN_SIZE=GEN_SIZE, RANDOM_SEED=RANDOM_SEED)
 
-case = "friendly_prisoner"
+case = "majority_cooperative_advantage"
 population, coop_pop, defect_pop = gambitGeneticSimulation(**precurated_cases[case])
 
 # plot statistics:
