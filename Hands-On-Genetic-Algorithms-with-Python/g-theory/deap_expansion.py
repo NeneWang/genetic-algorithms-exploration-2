@@ -155,8 +155,6 @@ def evalAccumulatedTournmanetGambit(individuals, toolbox, k=100, defaultEncounte
             
             individual1.fitness.values = (originalFitnessInd1 + fitnessInd1Inc,)
             individual2.fitness.values = (originalFitnessInd2 + fitnessInd2Inc,)
-            
-        
     
     return individuals
     
@@ -240,14 +238,6 @@ def selWithRankedPopulationCurved(individuals,toolbox=None, k=5):
         if i + 1 >= len(individuals):
             break
         
-        if len(chosen) >= population_limit:
-            # print(f" Broken population limit: {len(chosen)}")
-            break
-        skip_chance = 1 - (len(chosen) / population_limit)
-        # Skip chance increases as the population approaches the limit.
-        if random.random() > skip_chance:
-            # print(f"Skipped at skip chance: {skip_chance} f{random.random()}")
-            continue
         
         individual1 = individuals[i]
         individual2 = individuals[i+1]
@@ -290,7 +280,7 @@ def simpleVarAnd(population, toolbox, cxpb, mutpb):
 
 
 def eaGambit(population, toolbox, cxpb, mutpb, ngen, stats=None,
-             halloffame=None, verbose=__debug__,  population_limit = 1000, curvePopulation=True):
+             halloffame=None, verbose=__debug__,  population_limit = 1000, curvePopulation=True, limit_strategy="LIMIT_TOP"):
     """This algorithm is similar to DEAP eaSimple() algorithm, with the modification that:
     
     - Supports faceoff (gambit) between the population different strategies.
@@ -334,8 +324,22 @@ def eaGambit(population, toolbox, cxpb, mutpb, ngen, stats=None,
         population = toolbox.select(population)
         
         if(curvePopulation):
-            population = population[:population_limit]
-        
+            if limit_strategy=="LIMIT_TOP":
+                population = population[:population_limit]
+            elif limit_strategy=="INCREASING_DIFFICULTY":
+                chosen = []
+                for i in range(0, len(population)):
+                        
+                    if len(chosen) >= population_limit:
+                        # print(f" Broken population limit: {len(chosen)}")
+                        break
+                    skip_chance = 1 - (len(chosen) / population_limit)
+                    # Skip chance increases as the population approaches the limit.
+                    if random.random() > skip_chance:
+                        # print(f"Skipped at skip chance: {skip_chance} f{random.random()}")
+                        continue
+                    chosen.append(population[i])
+                population = chosen
         # Vary the pool of individuals
         offspring = simpleVarAnd(population, toolbox, cxpb, mutpb)
         

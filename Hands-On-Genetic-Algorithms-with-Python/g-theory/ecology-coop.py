@@ -56,7 +56,7 @@ supported_reproduction_algorithm = [
 
 def gambitGeneticSimulation(both_coop=2, both_defect_winner=1, mixed_coop=0, mixed_defect=3, INITIAL_COOPERATIE_RATE=INITIAL_COOPERATIE_RATE,
                             START_WITH_PURE_STRATEGIES=START_WITH_PURE_STRATEGIES, RANDOMIZE_SEED=True, POPULATION_SIZE=POPULATION_SIZE, P_CROSSOVER=P_CROSSOVER, P_MUTATION=P_MUTATION, FLIPBIT_MUTATION_PROB=FLIPBIT_MUTATION_PROB, MAX_GENERATIONS=MAX_GENERATIONS, POPULATION_LIMIT=POPULATION_LIMIT, 
-                            GEN_SIZE=GEN_SIZE, RANDOM_SEED=RANDOM_SEED, lore="", encounterEval="prisonDilemmaEval", evaluate=evalTournamentGambit, select=selLiteralToFitness, curvePopulation=True) -> tuple:
+                            GEN_SIZE=GEN_SIZE, RANDOM_SEED=RANDOM_SEED, lore="", encounterEval="prisonDilemmaEval", evaluate=evalTournamentGambit, select=selLiteralToFitness, curvePopulation=True, limit_strategy="LIMIT_TOP") -> tuple:
     
     if RANDOMIZE_SEED:
         RANDOM_SEED = random.randint(0, 10000)
@@ -131,7 +131,8 @@ def gambitGeneticSimulation(both_coop=2, both_defect_winner=1, mixed_coop=0, mix
 
     # perform the Genetic Algorithm flow with hof feature added:
     population, logbook =  eaGambit(population, toolbox, cxpb=P_CROSSOVER, mutpb=P_MUTATION,
-                                            ngen=MAX_GENERATIONS, verbose=True, population_limit=POPULATION_LIMIT, curvePopulation=curvePopulation)
+                                            ngen=MAX_GENERATIONS, verbose=True, population_limit=POPULATION_LIMIT, curvePopulation=curvePopulation,
+                                            limit_strategy=limit_strategy)
 
 
     # extract statistics:
@@ -169,138 +170,147 @@ precurated_cases = {
         "RANDOMIZE_SEED": False,
         "encounterEval": "prisonDilemmaEval"
     },
-    "friendly_prisoner": {
-        "lore": "Variant of class_prisonner, where there are more prisonners to cooperate.",
-        "encounterEval": "prisonDilemmaEval",
-        "INITIAL_COOPERATIE_RATE": .8,
-        "P_CROSSOVER": 0.0,
-        "P_MUTATION": 0.0,
-        "POPULATION_LIMIT": 100000
-        
-    },
-    "friendly_motivated_prisoner": {
-        "lore": "Variant of class_prisonner, where confrontation rewards are lower.",
-        "encounterEval": "prisonDilemmaEval",
-        "INITIAL_COOPERATIE_RATE": .5,
-        "both_coop": 3,
-        "mixed_coop": 0,
-        "mixed_defect": 2,
-        "P_CROSSOVER": 0.0,
-        "P_MUTATION": 0.0,
-    },
-    "long_term_prisoner": {
-        "lore": "Variant of class_prisonner, where the game is played multiple times.",
-        "encounterEval": "prisonDilemmaEval",
-        "INITIAL_COOPERATIE_RATE": .5,
-        "both_coop": 2, #4
-        "mixed_coop": 0,
-        "mixed_defect": 3, #3
-        "both_defect_winner": 1, #2
-        
-        "P_CROSSOVER": 0.2,
-        "P_MUTATION": 0.1,
-        "evaluate": evalAccumulatedTournmanetGambit,
-        "select": selRankedPaired,
-        "curvePopulation": True
-        
-    },
-    "long_term_friendly_prisoner": {
-        "lore": "Variant of class_prisonner, where confrontation rewards are lower.",
-        "encounterEval": "prisonDilemmaEval",
-        "INITIAL_COOPERATIE_RATE": .5,
-        "both_coop": 2,
-        "mixed_coop": 0,
-        "mixed_defect": 3,
-        "both_defect_winner": 0,
-        "P_CROSSOVER": 0.3,
-        "P_MUTATION": 0.1,
-        "evaluate": evalAccumulatedTournmanetGambit,
-        "select": selRankedPaired,
-        "curvePopulation": True        
-    },
-     "majority_cooperative": {
-        "lore": "Variant of class_prisonner, where confrontation rewards are lower.",
-        "encounterEval": "prisonDilemmaEval",
-        "INITIAL_COOPERATIE_RATE": .9,
-        "both_coop": 2,
-        "mixed_coop": 0,
-        "mixed_defect": 3,
-        "both_defect_winner": 0,
-        "P_CROSSOVER": 0.0,
-        "P_MUTATION": 0.0,
-        "evaluate": evalAccumulatedTournmanetGambit,
-        "select": selRankedPaired,
-        "curvePopulation": True        
-    },
-     
-     "majority_cooperative_mutated": {
-        "lore": "Variant of class_prisonner, where confrontation rewards are lower.",
-        "encounterEval": "prisonDilemmaEval",
-        "INITIAL_COOPERATIE_RATE": .9,
-        "both_coop": 2,
-        "mixed_coop": 0,
-        "mixed_defect": 3,
-        "both_defect_winner": 0,
-        "P_CROSSOVER": 0.3,
-        "P_MUTATION": 0.1,
-        "evaluate": evalAccumulatedTournmanetGambit,
-        "select": selRankedPaired,
-        "curvePopulation": True        
-    },     
-     "majority_cooperative_advantage": {
-        "lore": "Variant of class_prisonner, where confrontation rewards are lower.",
-        "encounterEval": "prisonDilemmaEval",
-        "INITIAL_COOPERATIE_RATE": .3,
-        "POPULATION_SIZE": 10,
-        "both_coop": 3,
-        "mixed_coop": 0,
-        "mixed_defect": 5,
-        "both_defect_winner": 1,
-        "P_CROSSOVER": 0.3,
-        "P_MUTATION": 0.1,
-        "evaluate": evalAccumulatedTournmanetGambit,
-        "select": selRankedPaired,
-        "curvePopulation": True        
-    },
-     "majority_cooperative_advantage_cruved": {
-        "lore": "Variant of class_prisonner, where confrontation rewards are lower.",
-        "encounterEval": "prisonDilemmaEval",
-        "INITIAL_COOPERATIE_RATE": .3,
-        "POPULATION_SIZE": 10,
-        "both_coop": 3,
-        "mixed_coop": 0,
-        "mixed_defect": 5,
-        "both_defect_winner": 16,
-        "P_CROSSOVER": 0.3,
-        "P_MUTATION": 0.1,
-        "evaluate": evalAccumulatedTournmanetGambit,
-        "select": selWithRankedPopulationCurved,
-        "curvePopulation": True,
-        "POPULATION_LIMIT": 100000
-    },
-      "game life": {
-        "lore": "Variant of class_prisonner, where confrontation rewards are lower.",
-        "encounterEval": "prisonDilemmaEval",
-        "INITIAL_COOPERATIE_RATE": .5,
+     "be1c.tribal_hunters": {
+        "lore": "BE1 variant. Whit a more rewarding setting for coolaboration.",
         "both_coop": 4,
-        "mixed_coop": 3,
-        "mixed_defect": 5,
+        "mixed_coop": 0,
+        "mixed_defect": 3,
         "both_defect_winner": 1,
-        "P_CROSSOVER": 0.3,
-        "P_MUTATION": 0.1,
-        "evaluate": evalAccumulatedTournmanetGambit,
-        "select": selRankedPaired,
-        "curvePopulation": False        
+        "POPULATION_SIZE": 100,
+        "INITIAL_COOPERATIE_RATE": .5,
+        "P_CROSSOVER": 0.0,
+        "P_MUTATION": 0.0,
+        "RANDOMIZE_SEED": False,
+        "encounterEval": "prisonDilemmaEval"
     },
-        
-        
+     "be2.nuclear_hunters": {
+        "lore": "BE2 Making aggressiveness nuclear",
+        "both_coop": 2,
+        "mixed_coop": 0,
+        "mixed_defect": 3,
+        "both_defect_winner": 0,
+        "POPULATION_SIZE": 100,
+        "INITIAL_COOPERATIE_RATE": .5,
+        "P_CROSSOVER": 0.0,
+        "P_MUTATION": 0.0,
+        "RANDOMIZE_SEED": False,
+        "encounterEval": "prisonDilemmaEval"
+    },
+     "be2b.nuclear_hunters": {
+        "lore": "BE2 variant | Where being cooperative is many times more rewarding.",
+        "both_coop": 5,
+        "mixed_coop": 0,
+        "mixed_defect": 3,
+        "both_defect_winner": 0,
+        "POPULATION_SIZE": 6,
+        "INITIAL_COOPERATIE_RATE": .5,
+        "POPULATION_LIMIT": 800000,
+        "P_CROSSOVER": 0.0,
+        "P_MUTATION": 0.0,
+        "RANDOMIZE_SEED": False,
+        "encounterEval": "prisonDilemmaEval",
+        "select": selLiteralToFitness
+    },
+     "be3.limiting_population": {
+        "lore": "BE2 variant | Where we create an limit to the max amount of individuals in the population.",
+        "both_coop": 2,
+        "mixed_coop": 0,
+        "mixed_defect": 3,
+        "both_defect_winner": 1,
+        "POPULATION_SIZE": 100,
+        "INITIAL_COOPERATIE_RATE": .5,
+        "POPULATION_LIMIT": 150,
+        "P_CROSSOVER": 0.0,
+        "P_MUTATION": 0.0,
+        "RANDOMIZE_SEED": False,
+        "encounterEval": "prisonDilemmaEval",
+        "select": selLiteralToFitness
+    },
+     "be3b.limiting_population": {
+        "lore": "BE3 variant. cooperating now is rewarded by 4 offsprings each instead.",
+        "both_coop": 6,
+        "mixed_coop": 0,
+        "mixed_defect": 3,
+        "both_defect_winner": 1,
+        "POPULATION_SIZE": 100,
+        "INITIAL_COOPERATIE_RATE": .5,
+        "POPULATION_LIMIT": 150,
+        "P_CROSSOVER": 0.0,
+        "P_MUTATION": 0.0,
+        "RANDOMIZE_SEED": False,
+        "encounterEval": "prisonDilemmaEval",
+        "select": selLiteralToFitness
+    },
+     "be3c.limiting_population": {
+        "lore": "BE3 variant. Limiting using a curved survivval. Where as the population grows, the chances of survival decreases. Using the POPULATION_LIMIT as an asymptote.",
+        "both_coop": 2,
+        "mixed_coop": 0,
+        "mixed_defect": 3,
+        "both_defect_winner": 1,
+        "POPULATION_SIZE": 100,
+        "INITIAL_COOPERATIE_RATE": .5,
+        "POPULATION_LIMIT": 150,
+        "P_CROSSOVER": 0.0,
+        "P_MUTATION": 0.0,
+        "RANDOMIZE_SEED": False,
+        "encounterEval": "prisonDilemmaEval",
+        "select": selLiteralToFitness,
+        "limit_strategy": "INCREASING_DIFFICULTY"
+    },
+     "be4.mutation_crossover": {
+        "lore": "BE3 variant. With Mutation and Crossover enabled.",
+        "both_coop": 2,
+        "mixed_coop": 0,
+        "mixed_defect": 3,
+        "both_defect_winner": 1,
+        "POPULATION_SIZE": 100,
+        "INITIAL_COOPERATIE_RATE": .5,
+        "POPULATION_LIMIT": 500000,
+        "P_CROSSOVER": 0,
+        "P_MUTATION": 0,
+        "RANDOMIZE_SEED": False,
+        "encounterEval": "prisonDilemmaEval",
+        "select": selLiteralToFitness,
+    },
+     "be4b.mutation_crossover": {
+        "lore": "BE4 variant. With a Increasing Difficulty Limit Strategy.",
+        "both_coop": 2,
+        "mixed_coop": 0,
+        "mixed_defect": 3,
+        "both_defect_winner": 1,
+        "POPULATION_SIZE": 100,
+        "INITIAL_COOPERATIE_RATE": .5,
+        "POPULATION_LIMIT": 500000,
+        "P_CROSSOVER": 0,
+        "P_MUTATION": 0.1,
+        "RANDOMIZE_SEED": False,
+        "encounterEval": "prisonDilemmaEval",
+        "select": selLiteralToFitness,
+        "limit_strategy": "INCREASING_DIFFICULTY"
+    },
+     "be4c.mutation_crossover": {
+        "lore": "BE4 variant. With Nuclear disagreements.",
+        "both_coop": 2,
+        "mixed_coop": 0,
+        "mixed_defect": 3,
+        "both_defect_winner": 0,
+        "POPULATION_SIZE": 100,
+        "INITIAL_COOPERATIE_RATE": .5,
+        "POPULATION_LIMIT": 500000,
+        "P_CROSSOVER": 0,
+        "P_MUTATION": 0.1,
+        "RANDOMIZE_SEED": False,
+        "encounterEval": "prisonDilemmaEval",
+        "select": selLiteralToFitness,
+        "limit_strategy": "INCREASING_DIFFICULTY"
+    },
 }
 
 
 
 # population, coop_pop, defect_pop = gambitGeneticSimulation(POPULATION_SIZE=POPULATION_SIZE, P_CROSSOVER=P_CROSSOVER, P_MUTATION=P_MUTATION, FLIPBIT_MUTATION_PROB=FLIPBIT_MUTATION_PROB, MAX_GENERATIONS=MAX_GENERATIONS, POPULATION_LIMIT=POPULATION_LIMIT, GEN_SIZE=GEN_SIZE, RANDOM_SEED=RANDOM_SEED)
 
-case = "be1b.tribal_hunters"
+case = "be4c.mutation_crossover"
 population, coop_pop, defect_pop = gambitGeneticSimulation(**precurated_cases[case])
 
 # plot statistics:
