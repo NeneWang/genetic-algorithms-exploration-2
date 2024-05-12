@@ -398,3 +398,32 @@ class OPTIONS:
     determineStrategyWithDominantRecessive = determineStrategyWithDominantRecessive
     determineStrategyWithMajority = determineStrategyWithMajority
     
+
+supported_reproduction_algorithm = [
+    {
+        "name": "FITNESS_PROPORTIONAL",
+        "inspiration": "A simple exmaple to introduce the idea of mating and mutation.",
+        "description": "The count of offspring of an individual is proportional to its fitness resulting from the evaluation function.",
+        "algorithm": eaGambit
+    },
+    {
+        "name": "FITNESS_ROULETTE",
+        "inspiration": "In human nature, when a hunter goes to 'hunt' depending on the cooperation with who else is also hunting, might be more successful, when coming back to the tribe, if succesfull, increasing the chances of mating.",
+        "description": "After multiple encounters, the fitness is aggregated from each encounter. A roulette wheel is used to select the parent, where those with larger fitness are more likely to be chosen."
+    },
+    {
+        "name": "ASEXUAL_STRUCTURE",
+        "inspiration": "Inspired from plants that decide to collaborate or not with other plants. Since plants cant move, they only have one interaction with it's environment. Depending on the interaction they might have more resources to reproduce.",
+        "description": "The offspring is a clone of the parent with x chance of some mutation times. The parent is selected by a tournament selection."
+    },
+    {
+        "name": "MONOGOID_STRUCTURE",
+        "inspiration": "Some humans societies attempt to have something like this. most commonly seen in birds and other animals",
+        "description": "Assigns half of the population as female, and make male indiividuals compete repetitevely at tournaments to earn resources. the more resources the the more offspring.",
+    },
+    {
+        "name": "POLYGOID_STRUCTURE",
+        "inspiration": "Inspired from the animal kingdom, where a male is more attractive if it has more resources.",
+        "description": "Assigns half of the population as female, rank male indiividuals by resources, gathered, and make them compete repetitevely at tournaments to earn resources. the more resources the the more offspring.",
+    }
+]
