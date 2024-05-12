@@ -166,7 +166,11 @@ MAX_CAPACITY = st.number_input('Max Capacity', min_value=1, value=400)
 
     
 st.subheader('Genetic Algorithm Settings')
-population_size = st.slider('Population Size', min_value=10, max_value=200, value=50, step=10)
+
+# Add link https://hackmd.io/@n_1IfOpxQPSjyRrn5yedJw/r1fbS-RZC#Definitions
+st.write("Definitions can be found at [HackMD](https://hackmd.io/@n_1IfOpxQPSjyRrn5yedJw/r1fbS-RZC#Definitions)")
+
+population_size = st.slider('Initial Population', min_value=10, max_value=200, value=50, step=10)
 crossover_prob = st.slider('Crossover Probability', min_value=0.1, max_value=1.0, value=0.9, step=0.1)
 mutation_prob = st.slider('Mutation Probability', min_value=0.01, max_value=0.5, value=0.1, step=0.01)
 max_generations = st.slider('Max Generations', min_value=10, max_value=200, value=50, step=10)
