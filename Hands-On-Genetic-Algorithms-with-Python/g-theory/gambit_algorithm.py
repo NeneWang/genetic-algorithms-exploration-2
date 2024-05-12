@@ -2,11 +2,7 @@ from deap import base
 from deap import creator
 from deap import tools
 import random
-import matplotlib.pyplot as plt
-import seaborn as sns
 from deap_expansion import eaGambit, gambiteval, prisonDilemmaEval, evalTournamentGambit, evalAccumulatedTournmanetGambit, selRankedPaired, selLiteralToFitness, selWithRankedPopulationCurved, determineStrategyWithDominantRecessive, determineStrategyWithMajority
-from gambit_algorithm import gambitGeneticSimulation
-from deap_expansion import OPTIONS
 
 
 INITIAL_COOPERATIE_RATE = .8
@@ -29,7 +25,7 @@ REPRODUCTION_LOGIC = "FITNESS_PROPORTIONAL_TORUNAMENT"
 
 def gambitGeneticSimulation(both_coop=2, both_defect_winner=1, mixed_coop=0, mixed_defect=3, INITIAL_COOPERATIE_RATE=INITIAL_COOPERATIE_RATE,
                             START_WITH_PURE_STRATEGIES=START_WITH_PURE_STRATEGIES, RANDOMIZE_SEED=True, POPULATION_SIZE=POPULATION_SIZE, P_CROSSOVER=P_CROSSOVER, P_MUTATION=P_MUTATION, FLIPBIT_MUTATION_PROB=FLIPBIT_MUTATION_PROB, MAX_GENERATIONS=MAX_GENERATIONS, POPULATION_LIMIT=POPULATION_LIMIT, 
-                            GEN_SIZE=GEN_SIZE, RANDOM_SEED=RANDOM_SEED, lore="", encounterEval=OPTIONS.INCREASING_DIFFICULTY, evaluate=evalTournamentGambit, select=selLiteralToFitness, curvePopulation=True, limit_strategy="LIMIT_TOP", determine_strategy=determineStrategyWithMajority) -> tuple:
+                            GEN_SIZE=GEN_SIZE, RANDOM_SEED=RANDOM_SEED, lore="", encounterEval="prisonDilemmaEval", evaluate=evalTournamentGambit, select=selLiteralToFitness, curvePopulation=True, limit_strategy="LIMIT_TOP", determine_strategy=determineStrategyWithMajority) -> tuple:
     """
     Runs the Gambit Simulation, here the possible tools supported 
     limit_strategy: 'LIMIT_TOP' | 'INCREASING_DIFFICULTY`
@@ -59,7 +55,7 @@ def gambitGeneticSimulation(both_coop=2, both_defect_winner=1, mixed_coop=0, mix
     toolbox.register("mate", tools.cxTwoPoint)
     toolbox.register("mutate", tools.mutFlipBit, indpb=FLIPBIT_MUTATION_PROB)
     evalMap = {
-        OPTIONS.INCREASING_DIFFICULTY: prisonDilemmaEval,
+        "prisonDilemmaEval": prisonDilemmaEval,
         "gambiteval": gambiteval
     }
     toolbox.register("encounterEval", evalMap[encounterEval], both_coop=both_coop, both_defect_winner=both_defect_winner, mixed_coop=mixed_coop, mixed_defect=mixed_defect)

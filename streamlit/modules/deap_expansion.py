@@ -381,6 +381,7 @@ class OPTIONS:
     INCREASING_DIFFICULTY = "INCREASING_DIFFICULTY"
     LIMIT_TOP = "LIMIT_TOP"
     PRISON_DILEMA_EVAL = "prisonDilemmaEval"
+    GAMBIT_EVAL = "gambiteval"
     
     determineStrategyWithDominantRecessive = determineStrategyWithDominantRecessive
     determineStrategyWithMajority = determineStrategyWithMajority

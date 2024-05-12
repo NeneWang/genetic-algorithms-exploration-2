@@ -56,10 +56,10 @@ def gambitGeneticSimulation(both_coop=2, both_defect_winner=1, mixed_coop=0, mix
     toolbox.register("mate", tools.cxTwoPoint)
     toolbox.register("mutate", tools.mutFlipBit, indpb=FLIPBIT_MUTATION_PROB)
     evalMap = {
-        OPTIONS.INCREASING_DIFFICULTY: prisonDilemmaEval,
-        "gambiteval": gambiteval
+        OPTIONS.PRISON_DILEMA_EVAL: prisonDilemmaEval,
+       OPTIONS.GAMBIT_EVAL: gambiteval
     }
-    toolbox.register("encounterEval", evalMap[encounterEval], both_coop=both_coop, both_defect_winner=both_defect_winner, mixed_coop=mixed_coop, mixed_defect=mixed_defect)
+    toolbox.register("encounterEval", prisonDilemmaEval, both_coop=both_coop, both_defect_winner=both_defect_winner, mixed_coop=mixed_coop, mixed_defect=mixed_defect)
     toolbox.register("evaluate", evaluate )
     
     
