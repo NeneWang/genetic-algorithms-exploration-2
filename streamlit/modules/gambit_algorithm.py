@@ -2,11 +2,8 @@ from deap import base
 from deap import creator
 from deap import tools
 import random
-import matplotlib.pyplot as plt
-import seaborn as sns
-from deap_expansion import eaGambit, gambiteval, prisonDilemmaEval, evalTournamentGambit, evalAccumulatedTournmanetGambit, selRankedPaired, selLiteralToFitness, selWithRankedPopulationCurved, determineStrategyWithDominantRecessive, determineStrategyWithMajority
-from gambit_algorithm import gambitGeneticSimulation
-from deap_expansion import OPTIONS
+from modules.deap_expansion import eaGambit, gambiteval, prisonDilemmaEval, evalTournamentGambit, evalAccumulatedTournmanetGambit, selRankedPaired, selLiteralToFitness, selWithRankedPopulationCurved, determineStrategyWithDominantRecessive, determineStrategyWithMajority
+from modules.deap_expansion import OPTIONS
 
 
 INITIAL_COOPERATIE_RATE = .8
