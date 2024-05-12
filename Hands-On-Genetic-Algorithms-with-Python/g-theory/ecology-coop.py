@@ -5,7 +5,9 @@ import random
 import matplotlib.pyplot as plt
 import seaborn as sns
 
-from deap_expansion import eaGambit, gambiteval, prisonDilemmaEval, evalTournamentGambit, evalAccumulatedTournmanetGambit, selRankedPaired, selLiteralToFitness, selWithRankedPopulationCurved
+from deap_expansion import eaGambit, gambiteval, prisonDilemmaEval, evalTournamentGambit, evalAccumulatedTournmanetGambit, selRankedPaired, selLiteralToFitness, selWithRankedPopulationCurved, determineStrategyWithDominantRecessive, determineStrategyWithMajority
+
+from deap_expansion import OPTIONS
 
 INITIAL_COOPERATIE_RATE = .8
 START_WITH_PURE_STRATEGIES = True
@@ -56,8 +58,12 @@ supported_reproduction_algorithm = [
 
 def gambitGeneticSimulation(both_coop=2, both_defect_winner=1, mixed_coop=0, mixed_defect=3, INITIAL_COOPERATIE_RATE=INITIAL_COOPERATIE_RATE,
                             START_WITH_PURE_STRATEGIES=START_WITH_PURE_STRATEGIES, RANDOMIZE_SEED=True, POPULATION_SIZE=POPULATION_SIZE, P_CROSSOVER=P_CROSSOVER, P_MUTATION=P_MUTATION, FLIPBIT_MUTATION_PROB=FLIPBIT_MUTATION_PROB, MAX_GENERATIONS=MAX_GENERATIONS, POPULATION_LIMIT=POPULATION_LIMIT, 
-                            GEN_SIZE=GEN_SIZE, RANDOM_SEED=RANDOM_SEED, lore="", encounterEval="prisonDilemmaEval", evaluate=evalTournamentGambit, select=selLiteralToFitness, curvePopulation=True, limit_strategy="LIMIT_TOP") -> tuple:
-    
+                            GEN_SIZE=GEN_SIZE, RANDOM_SEED=RANDOM_SEED, lore="", encounterEval=OPTIONS.INCREASING_DIFFICULTY, evaluate=evalTournamentGambit, select=selLiteralToFitness, curvePopulation=True, limit_strategy="LIMIT_TOP", determine_strategy=determineStrategyWithMajority) -> tuple:
+    """
+    Runs the Gambit Simulation, here the possible tools supported 
+    limit_strategy: 'LIMIT_TOP' | 'INCREASING_DIFFICULTY`
+    determine_strategy: determineStrategyWithDominantRecessive | determineStrategyWithMajority
+    """
     if RANDOMIZE_SEED:
         RANDOM_SEED = random.randint(0, 10000)
     else:
@@ -76,12 +82,13 @@ def gambitGeneticSimulation(both_coop=2, both_defect_winner=1, mixed_coop=0, mix
     # create the Individual class based on list:
     creator.create("Individual", list, fitness=creator.FitnessMax)
     # create the individual operator to fill up an Individual instance:
+    toolbox.register("determine_strategy", determine_strategy)
 
     # Single-point crossover:
     toolbox.register("mate", tools.cxTwoPoint)
     toolbox.register("mutate", tools.mutFlipBit, indpb=FLIPBIT_MUTATION_PROB)
     evalMap = {
-        "prisonDilemmaEval": prisonDilemmaEval,
+        OPTIONS.INCREASING_DIFFICULTY: prisonDilemmaEval,
         "gambiteval": gambiteval
     }
     toolbox.register("encounterEval", evalMap[encounterEval], both_coop=both_coop, both_defect_winner=both_defect_winner, mixed_coop=mixed_coop, mixed_defect=mixed_defect)
@@ -155,7 +162,7 @@ precurated_cases = {
         "P_CROSSOVER": 0.0,
         "P_MUTATION": 0.0,
         "RANDOMIZE_SEED": False,
-        "encounterEval": "prisonDilemmaEval"
+        "encounterEval": OPTIONS.INCREASING_DIFFICULTY
     },
      "be1b.tribal_hunters": {
         "lore": "BE1 Base Case Tribal Hunters",
@@ -168,7 +175,7 @@ precurated_cases = {
         "P_CROSSOVER": 0.0,
         "P_MUTATION": 0.0,
         "RANDOMIZE_SEED": False,
-        "encounterEval": "prisonDilemmaEval"
+        "encounterEval": OPTIONS.INCREASING_DIFFICULTY
     },
      "be1c.tribal_hunters": {
         "lore": "BE1 variant. Whit a more rewarding setting for coolaboration.",
@@ -181,7 +188,7 @@ precurated_cases = {
         "P_CROSSOVER": 0.0,
         "P_MUTATION": 0.0,
         "RANDOMIZE_SEED": False,
-        "encounterEval": "prisonDilemmaEval"
+        "encounterEval": OPTIONS.INCREASING_DIFFICULTY
     },
      "be2.nuclear_hunters": {
         "lore": "BE2 Making aggressiveness nuclear",
@@ -194,7 +201,7 @@ precurated_cases = {
         "P_CROSSOVER": 0.0,
         "P_MUTATION": 0.0,
         "RANDOMIZE_SEED": False,
-        "encounterEval": "prisonDilemmaEval"
+        "encounterEval": OPTIONS.INCREASING_DIFFICULTY
     },
      "be2b.nuclear_hunters": {
         "lore": "BE2 variant | Where being cooperative is many times more rewarding.",
@@ -208,8 +215,8 @@ precurated_cases = {
         "P_CROSSOVER": 0.0,
         "P_MUTATION": 0.0,
         "RANDOMIZE_SEED": False,
-        "encounterEval": "prisonDilemmaEval",
-        "select": selLiteralToFitness
+        "encounterEval": OPTIONS.INCREASING_DIFFICULTY,
+        "select": OPTIONS.selLiteralToFitness
     },
      "be3.limiting_population": {
         "lore": "BE2 variant | Where we create an limit to the max amount of individuals in the population.",
@@ -223,8 +230,8 @@ precurated_cases = {
         "P_CROSSOVER": 0.0,
         "P_MUTATION": 0.0,
         "RANDOMIZE_SEED": False,
-        "encounterEval": "prisonDilemmaEval",
-        "select": selLiteralToFitness
+        "encounterEval": OPTIONS.INCREASING_DIFFICULTY,
+        "select": OPTIONS.selLiteralToFitness
     },
      "be3b.limiting_population": {
         "lore": "BE3 variant. cooperating now is rewarded by 4 offsprings each instead.",
@@ -238,8 +245,8 @@ precurated_cases = {
         "P_CROSSOVER": 0.0,
         "P_MUTATION": 0.0,
         "RANDOMIZE_SEED": False,
-        "encounterEval": "prisonDilemmaEval",
-        "select": selLiteralToFitness
+        "encounterEval": OPTIONS.INCREASING_DIFFICULTY,
+        "select": OPTIONS.selLiteralToFitness
     },
      "be3c.limiting_population": {
         "lore": "BE3 variant. Limiting using a curved survivval. Where as the population grows, the chances of survival decreases. Using the POPULATION_LIMIT as an asymptote.",
@@ -253,9 +260,9 @@ precurated_cases = {
         "P_CROSSOVER": 0.0,
         "P_MUTATION": 0.0,
         "RANDOMIZE_SEED": False,
-        "encounterEval": "prisonDilemmaEval",
-        "select": selLiteralToFitness,
-        "limit_strategy": "INCREASING_DIFFICULTY"
+        "encounterEval": OPTIONS.INCREASING_DIFFICULTY,
+        "select": OPTIONS.selLiteralToFitness,
+        "limit_strategy": OPTIONS.INCREASING_DIFFICULTY
     },
      "be4.mutation_crossover": {
         "lore": "BE3 variant. With Mutation and Crossover enabled.",
@@ -269,8 +276,8 @@ precurated_cases = {
         "P_CROSSOVER": 0,
         "P_MUTATION": 0,
         "RANDOMIZE_SEED": False,
-        "encounterEval": "prisonDilemmaEval",
-        "select": selLiteralToFitness,
+        "encounterEval": OPTIONS.INCREASING_DIFFICULTY,
+        "select": OPTIONS.selLiteralToFitness,
     },
      "be4b.mutation_crossover": {
         "lore": "BE4 variant. With a Increasing Difficulty Limit Strategy.",
@@ -284,9 +291,9 @@ precurated_cases = {
         "P_CROSSOVER": 0,
         "P_MUTATION": 0.1,
         "RANDOMIZE_SEED": False,
-        "encounterEval": "prisonDilemmaEval",
-        "select": selLiteralToFitness,
-        "limit_strategy": "INCREASING_DIFFICULTY"
+        "encounterEval": OPTIONS.INCREASING_DIFFICULTY,
+        "select": OPTIONS.selLiteralToFitness,
+        "limit_strategy": OPTIONS.INCREASING_DIFFICULTY
     },
      "be4c.mutation_crossover": {
         "lore": "BE4 variant. With Nuclear disagreements.",
@@ -300,9 +307,131 @@ precurated_cases = {
         "P_CROSSOVER": 0,
         "P_MUTATION": 0.1,
         "RANDOMIZE_SEED": False,
-        "encounterEval": "prisonDilemmaEval",
-        "select": selLiteralToFitness,
-        "limit_strategy": "INCREASING_DIFFICULTY"
+        "encounterEval": OPTIONS.INCREASING_DIFFICULTY,
+        "select": OPTIONS.selLiteralToFitness,
+        "limit_strategy": OPTIONS.INCREASING_DIFFICULTY
+    },
+     "be4d.mutation_crossover": {
+        "lore": "BE4 variant. With Nuclear disagreements.",
+        "both_coop": 2,
+        "mixed_coop": 0,
+        "mixed_defect": 3,
+        "both_defect_winner": 0,
+        "POPULATION_SIZE": 100,
+        "INITIAL_COOPERATIE_RATE": .5,
+        "POPULATION_LIMIT": 500000,
+        "P_CROSSOVER": 0.5,
+        "P_MUTATION": 0.1,
+        "RANDOMIZE_SEED": False,
+        "encounterEval": OPTIONS.INCREASING_DIFFICULTY,
+        "select": OPTIONS.selLiteralToFitness,
+        "limit_strategy": OPTIONS.INCREASING_DIFFICULTY
+    },
+     "be5a.recessive_dominant": {
+        "lore": "BE4 variant. With Mutation and Crossover enabled.",
+        "both_coop": 2,
+        "mixed_coop": 0,
+        "mixed_defect": 3,
+        "both_defect_winner": 1,
+        "POPULATION_SIZE": 100,
+        "INITIAL_COOPERATIE_RATE": .5,
+        "POPULATION_LIMIT": 500000,
+        "P_CROSSOVER": 0.5,
+        "P_MUTATION": 0.1,
+        "RANDOMIZE_SEED": False,
+        "encounterEval": OPTIONS.INCREASING_DIFFICULTY,
+        "select": OPTIONS.selLiteralToFitness,
+        "limit_strategy": OPTIONS.INCREASING_DIFFICULTY,
+        "determine_strategy": determineStrategyWithDominantRecessive
+    },
+     "be5acontrol.recessive_dominant": {
+        "lore": "BE4 variant. With Mutation and Crossover enabled.",
+        "both_coop": 2,
+        "mixed_coop": 0,
+        "mixed_defect": 3,
+        "both_defect_winner": 1,
+        "POPULATION_SIZE": 100,
+        "INITIAL_COOPERATIE_RATE": .5,
+        "POPULATION_LIMIT": 500000,
+        "P_CROSSOVER": 0.5,
+        "P_MUTATION": 0.1,
+        "RANDOMIZE_SEED": False,
+        "encounterEval": OPTIONS.INCREASING_DIFFICULTY,
+        "select": OPTIONS.selLiteralToFitness,
+        "limit_strategy": OPTIONS.INCREASING_DIFFICULTY
+    },
+     
+     
+     
+     
+     "be5b.control_limited": {
+        "lore": "BE4 variant. With Mutation and Crossover enabled.",
+        "both_coop": 5,
+        "mixed_coop": 0,
+        "mixed_defect": 10,
+        "both_defect_winner": 1,
+        "POPULATION_SIZE": 100,
+        "INITIAL_COOPERATIE_RATE": .5,
+        "POPULATION_LIMIT": 300000,
+        "P_CROSSOVER": 0.1,
+        "P_MUTATION": 0.05,
+        "RANDOMIZE_SEED": False,
+        "encounterEval": OPTIONS.PRISON_DILEMA_EVAL,
+        "limit_strategy": OPTIONS.LIMIT_TOP,
+        "select": OPTIONS.selLiteralToFitness,
+        "determine_strategy": OPTIONS.determineStrategyWithMajority
+    },
+     "be5b.recessive_dominant_limited": {
+        "lore": "BE4 variant. With Mutation and Crossover enabled.",
+        "both_coop": 5,
+        "mixed_coop": 0,
+        "mixed_defect": 10,
+        "both_defect_winner": 1,
+        "POPULATION_SIZE": 100,
+        "INITIAL_COOPERATIE_RATE": .5,
+        "POPULATION_LIMIT": 300000,
+        "P_CROSSOVER": 0.1,
+        "P_MUTATION": 0.05,
+        "RANDOMIZE_SEED": False,
+        "encounterEval": OPTIONS.PRISON_DILEMA_EVAL,
+        "limit_strategy": OPTIONS.LIMIT_TOP,
+        "select": OPTIONS.selLiteralToFitness,
+        "determine_strategy": OPTIONS.determineStrategyWithDominantRecessive
+    },
+     
+     "be5b.control_limited_increasing": {
+        "lore": "BE4 variant. With Mutation and Crossover enabled.",
+        "both_coop": 5,
+        "mixed_coop": 0,
+        "mixed_defect": 10,
+        "both_defect_winner": 1,
+        "POPULATION_SIZE": 100,
+        "INITIAL_COOPERATIE_RATE": .5,
+        "POPULATION_LIMIT": 300000,
+        "P_CROSSOVER": 0.1,
+        "P_MUTATION": 0.05,
+        "RANDOMIZE_SEED": False,
+        "encounterEval": OPTIONS.PRISON_DILEMA_EVAL,
+        "limit_strategy": OPTIONS.INCREASING_DIFFICULTY,
+        "select": OPTIONS.selLiteralToFitness,
+        "determine_strategy": OPTIONS.determineStrategyWithMajority
+    },
+     "be5b.recessive_dominant_increasing": {
+        "lore": "BE4 variant. With Mutation and Crossover enabled.",
+        "both_coop": 5,
+        "mixed_coop": 0,
+        "mixed_defect": 10,
+        "both_defect_winner": 1,
+        "POPULATION_SIZE": 100,
+        "INITIAL_COOPERATIE_RATE": .5,
+        "POPULATION_LIMIT": 300000,
+        "P_CROSSOVER": 0.1,
+        "P_MUTATION": 0.05,
+        "RANDOMIZE_SEED": False,
+        "encounterEval": OPTIONS.PRISON_DILEMA_EVAL,
+        "limit_strategy": OPTIONS.INCREASING_DIFFICULTY,
+        "select": OPTIONS.selLiteralToFitness,
+        "determine_strategy": OPTIONS.determineStrategyWithDominantRecessive
     },
 }
 
@@ -310,7 +439,9 @@ precurated_cases = {
 
 # population, coop_pop, defect_pop = gambitGeneticSimulation(POPULATION_SIZE=POPULATION_SIZE, P_CROSSOVER=P_CROSSOVER, P_MUTATION=P_MUTATION, FLIPBIT_MUTATION_PROB=FLIPBIT_MUTATION_PROB, MAX_GENERATIONS=MAX_GENERATIONS, POPULATION_LIMIT=POPULATION_LIMIT, GEN_SIZE=GEN_SIZE, RANDOM_SEED=RANDOM_SEED)
 
-case = "be4c.mutation_crossover"
+case = "be5b.recessive_dominant_limited"
+case = "be5b.control_limited_increasing"
+
 population, coop_pop, defect_pop = gambitGeneticSimulation(**precurated_cases[case])
 
 # plot statistics:
@@ -321,6 +452,8 @@ plt.plot(defect_pop, color='red')
 plt.xlabel('Generation')
 plt.ylabel('Population')
 plt.legend(['Total', 'Cooperative', 'Aggressive'])
-plt.title('Population over Generations')
+
+title = f"Population over Generations | {case}"
+plt.title(title)
 plt.show()
 

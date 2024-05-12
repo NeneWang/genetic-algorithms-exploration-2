@@ -7,6 +7,7 @@ AGGRESIVE = "AGGRESIVE"
 COOPERATIVE = "COOPERATIVE"
 
 
+
 def determineStrategyWithMajority(individual):
     """
     The strategy is determined by the majority of the genes.
@@ -20,7 +21,7 @@ def determineStrategyWithMajority(individual):
     else:
         return COOPERATIVE
 
-def determineStrategyWithDominantRecessive(individual, limit=4):
+def determineStrategyWithDominantRecessive(individual, limit=2):
     """
     The strategy is determine as:
     
@@ -31,12 +32,12 @@ def determineStrategyWithDominantRecessive(individual, limit=4):
     
     """
     
-    count0 = sum([1 for i in individual[:limit] if i == 0])
-    if count0 > 0:
+    count1 = sum([1 for i in individual[:limit] if i == 1])
+    if count1 <= 0:
         return AGGRESIVE
     else:
         return COOPERATIVE
-    
+
     
 
 def gambiteval(ind1strategy, ind2strategy, both_coop=2, both_defect_winner=1, mixed_coop=0, mixed_defect=3):
@@ -103,8 +104,8 @@ def evalTournamentGambit(individuals, toolbox, defaultEncounterEval=gambiteval):
         individual1 = individuals[i]
         individual2 = individuals[i+1]
         
-        strategyInd1 = determineStrategyWithMajority(individual1)
-        strategyInd2 = determineStrategyWithMajority(individual2)
+        strategyInd1 = toolbox.determine_strategy(individual1)
+        strategyInd2 = toolbox.determine_strategy(individual2)
 
         # fitnessInd1Inc, fitnessInd2Inc = gambiteval(strategyInd1, strategyInd2)
         fitnessInd1Inc, fitnessInd2Inc = encounterEval(strategyInd1, strategyInd2)
@@ -145,8 +146,8 @@ def evalAccumulatedTournmanetGambit(individuals, toolbox, k=100, defaultEncounte
             individual1 = individuals[i]
             individual2 = individuals[i+1]
             
-            strategyInd1 = determineStrategyWithMajority(individual1)
-            strategyInd2 = determineStrategyWithMajority(individual2)
+            strategyInd1 = toolbox.determine_strategy(individual1)
+            strategyInd2 = toolbox.determine_strategy(individual2)
 
             fitnessInd1Inc, fitnessInd2Inc = toolbox.encounterEval(strategyInd1, strategyInd2)
             originalFitnessInd1 = individual1.fitness.values[0]
@@ -299,7 +300,7 @@ def eaGambit(population, toolbox, cxpb, mutpb, ngen, stats=None,
     defect_pop = 0
     
     for ind in population:
-        if determineStrategyWithMajority(ind) == COOPERATIVE:
+        if toolbox.determine_strategy(ind) == COOPERATIVE:
             coop_pop += 1
         else:
             defect_pop += 1
@@ -355,7 +356,7 @@ def eaGambit(population, toolbox, cxpb, mutpb, ngen, stats=None,
         sample_defect_genes = ""
         
         for ind in population:
-            if determineStrategyWithMajority(ind) == COOPERATIVE:
+            if toolbox.determine_strategy(ind) == COOPERATIVE:
                 coop_pop += 1
                 # join list into string
                 sample_coop_genes = ''.join([str(i) for i in ind])
@@ -372,3 +373,28 @@ def eaGambit(population, toolbox, cxpb, mutpb, ngen, stats=None,
 
 
 
+
+class OPTIONS:
+    AGGRESIVE = "AGGRESIVE"
+    COOPERATIVE = "COOPERATIVE"
+    
+    INCREASING_DIFFICULTY = "INCREASING_DIFFICULTY"
+    LIMIT_TOP = "LIMIT_TOP"
+    PRISON_DILEMA_EVAL = "prisonDilemmaEval"
+    
+    determineStrategyWithDominantRecessive = determineStrategyWithDominantRecessive
+    determineStrategyWithMajority = determineStrategyWithMajority
+    
+    gambiteval = gambiteval
+    prisonDilemmaEval = prisonDilemmaEval
+    evalTournamentGambit = evalTournamentGambit
+    evalAccumulatedTournmanetGambit = evalAccumulatedTournmanetGambit
+    
+    selRankedPaired = selRankedPaired
+    selWithRankedPopulationCurved = selWithRankedPopulationCurved
+    selLiteralToFitness = selLiteralToFitness
+    selWithRankedPopulationCurved = selWithRankedPopulationCurved
+    
+    determineStrategyWithDominantRecessive = determineStrategyWithDominantRecessive
+    determineStrategyWithMajority = determineStrategyWithMajority
+    
