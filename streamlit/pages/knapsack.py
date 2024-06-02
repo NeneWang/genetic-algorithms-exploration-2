@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 from deap import base, creator, tools, algorithms
 import pandas as pd
-from modules.knapsack_tools import ITEMS_KNAPSACK, MAX_CAPACITY, apply_torunament, KnapsackProblem, run_knapsack_tournament
+from modules.knapsack_tools import ITEMS_KNAPSACK, MAX_CAPACITY, apply_tournament, KnapsackProblem, run_knapsack_tournament
 
 
 st.title('Knapsack Problem')
@@ -52,41 +52,48 @@ crossover_prob = st.slider('Crossover Probability', min_value=0.1, max_value=1.0
 mutation_prob = st.slider('Mutation Probability', min_value=0.01, max_value=0.5, value=0.1, step=0.01)
 max_generations = st.slider('Max Generations', min_value=10, max_value=200, value=50, step=10)
 
+toolbox = base.Toolbox()
 
 st.subheader("Selection Method")
 # Radio selection for selection method
+
+
+        
 selection_method = st.radio("Selection Method", ["Tournament", "Roulette", "Best K", "Stochastic Universal Sampling"])
 if selection_method == "Tournament":
     tour_size = st.number_input('Tournament Size', min_value=2, value=3)
-    def selection_method(toolbox, tour_size=tour_size):
+    
+    def apply_tournament(toolbox, tour_size=tour_size):
         toolbox.register("select", tools.selTournament, tournsize=tour_size)
+        return toolbox
         
-        return toolbox
-    def selection_method(toolbox, tournsize=3):
-        toolbox.register("select", tools.selTournament, tournsize=tournsize)
-        return toolbox
 elif selection_method == "Roulette":
-    def selection_method(toolbox):
+    def apply_tournament(toolbox):
         toolbox.register("select", tools.selRoulette)
         return toolbox
 elif selection_method == "Best K":
     k = st.number_input('K', min_value=1, value=5)
     if k:
-        def selection_method(toolbox, k=k):
+        def apply_tournament(toolbox, k=k):
             toolbox.register("select", tools.selBest, k=k)
             return toolbox
 elif selection_method == "Stochastic Universal Sampling":
     k = st.number_input('K', min_value=1, value=5)
-    def selection_method(toolbox):
+    def apply_tournament(toolbox, k=k):
         toolbox.register("select", tools.selStochasticUniversalSampling, k=k)
         return toolbox
 
+
 df_solution = pd.DataFrame()
 show_solution = st.toggle("Show Best Solution")
+plot_max_average_lineplot = st.toggle("Plot Max and Average Fitness Lineplot")
+plot_max_average_areaplot = st.toggle("Plot Max and Average Fitness Areaplot")
 
 if st.button('Run Knapsack Solution'):
     print("Running Knapsack", MAX_CAPACITY)
-    results = run_knapsack_tournament(population_size, crossover_prob, mutation_prob, max_generations, ITEMS_KNAPSACK, MAX_CAPACITY)
+    
+    results = run_knapsack_tournament(toolbox, population_size, crossover_prob, mutation_prob, max_generations, ITEMS_KNAPSACK, MAX_CAPACITY,
+                                      apply_selection=apply_tournament)
     best_solution = results['best_solution']
     best_value = results['best_value']
     logbook = results['logbook']
@@ -98,6 +105,16 @@ if st.button('Run Knapsack Solution'):
     st.write("Best Value: ", best_value)
     df_solution = knapsack.get_solution_table(best_solution)
     
+    max_fitness = logbook.select("max")
+    avg_fitness = logbook.select("avg")
+    gen = logbook.select("gen")
+    max_found_at = logbook.select("max_found_at")
+    df_fitness = pd.DataFrame({"Generation": gen, "Max Fitness": max_fitness, "Average Fitness": avg_fitness})
+    
+    if plot_max_average_lineplot:
+        st.line_chart(df_fitness)
+    if plot_max_average_areaplot:
+        st.area_chart(df_fitness)
   
     if show_solution:
         if not df_solution.empty:

@@ -17,10 +17,6 @@ ITEMS_KNAPSACK = [
 ]
 
 
-def apply_torunament(toolbox, tournsize=3):
-    toolbox.register("select", tools.selTournament, tournsize=tournsize)
-    return toolbox
-        
     
 
 MAX_CAPACITY = 400
@@ -71,8 +67,12 @@ class KnapsackProblem:
         df_solution = pd.DataFrame(solution_items, columns=["Name", "Weight", "Utility"])
         return df_solution
         
-    
-def run_knapsack_tournament(population_size, crossover_prob, mutation_prob, max_generations, items=ITEMS_KNAPSACK, max_capacity=MAX_CAPACITY, apply_selection=apply_torunament):
+
+def apply_tournament(toolbox, tournsize=3):
+    toolbox.register("select", tools.selTournament, tournsize=tournsize)
+    return toolbox
+
+def run_knapsack_tournament(toolbox, population_size, crossover_prob, mutation_prob, max_generations, items=ITEMS_KNAPSACK, max_capacity=MAX_CAPACITY, apply_selection=apply_tournament):
     # Move the creation of Knapsack problem instance inside the function
     knapsack = KnapsackProblem(items=items, maxCapacity=max_capacity)
 
@@ -81,8 +81,7 @@ def run_knapsack_tournament(population_size, crossover_prob, mutation_prob, max_
     P_MUTATION = mutation_prob
     MAX_GENERATIONS = max_generations
     HALL_OF_FAME_SIZE = 1
-
-    toolbox = base.Toolbox()
+    
     toolbox.register("zeroOrOne", np.random.randint, 0, 2)
     creator.create("FitnessMax", base.Fitness, weights=(1.0,))
     creator.create("Individual", list, fitness=creator.FitnessMax)
@@ -115,24 +114,3 @@ def run_knapsack_tournament(population_size, crossover_prob, mutation_prob, max_
         "hof": hof,
         "knapsack": knapsack
     }
-    
-    best = knapsack.best_solution
-    st.write(" == Best Ever Individual == ", str(best))
-    st.write(" === Best Ever Fitness === ", best.fitness.values[0])
-    st.write(" === Last Generation Mean Fitness === ", logbook.select("avg")[-1])
-
-    st.write(" ============== Knapsack Items ============== ")
-    knapsack.get_solution_table(best)
-
-    maxFitnessValues, meanFitnessValues = logbook.select("max", "avg")
-
-    sns.set_style("whitegrid")
-    plt.plot(maxFitnessValues, color='red', label='Max Fitness')
-    plt.plot(meanFitnessValues, color='green', label='Average Fitness')
-    plt.xlabel('Generation')
-    plt.ylabel('Fitness')
-    plt.title('Max and Average fitness over Generations')
-    plt.legend()  # Add legend to the plot
-
-    st.set_option('deprecation.showPyplotGlobalUse', False)
-    st.pyplot()
