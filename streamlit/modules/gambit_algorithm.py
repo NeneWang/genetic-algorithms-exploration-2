@@ -113,5 +113,5 @@ def gambitGeneticSimulation(both_coop=2, both_defect_winner=1, mixed_coop=0, mix
     # extract statistics:
     # logbook.header = ['gen', 'population', 'coop_pop', 'defect_pop'] 
     population, coop_pop, defect_pop = logbook.select("population", "coop_pop", "defect_pop")
-    return population, coop_pop, defect_pop
+    return population, coop_pop, defect_pop, logbook
 

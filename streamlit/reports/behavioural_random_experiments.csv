@@ -1,0 +1,3 @@
+,POPULATION_SIZE,both_coop,mixed_coop,mixed_defect,both_defect_winner,INITIAL_COOPERATIE_RATE,POPULATION_LIMIT,P_CROSSOVER,P_MUTATION,RANDOM_SEED,select,determine_strategy,encounterEval,end_coop_populations,end_defect_populations,end_population,dominant_allele_switch,max_reached_at_generation,max_reached_population,is_stable_population_size
+0,2000,5,0,10,1,0.0,30000,0.0,0.5,45,<function selLiteralToFitness at 0x00000251C3F1B1C0>,<function determineStrategyWithMajority at 0x00000251C3F1A9E0>,prisonDilemmaEval,0,30000,30000,23,5,30000,True
+1,5000,5,0,3,1,0.5,30000,0.0,0.1,46,<function selWithRankedPopulationCurved at 0x00000251C3F1B2E0>,<function determineStrategyWithMajority at 0x00000251C3F1A9E0>,gambiteval,0,0,0,2,5,9718,False

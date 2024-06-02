@@ -292,12 +292,20 @@ def eaGambit(population, toolbox, cxpb, mutpb, ngen, stats=None,
     - The stats are updated in each generation. (and recorded in the logbook)
     """
     logbook = tools.Logbook()
-    logbook.header = ['gen', 'population', 'coop_pop', 'defect_pop', 'sample_coop_genes', 'sample_defect_genes'] 
+    logbook.header = ['gen', 'population', 'coop_pop', 'defect_pop', 'sample_coop_genes', 'sample_defect_genes',
+                      'dominant_allele_switch', 'max_reached_at_generation', 'max_reached_value'] 
 
 
     
     coop_pop = 0
     defect_pop = 0
+    
+    dominant_allele = None
+    last_dominant_allele = None
+    dominant_allele_switch = 0
+    
+    max_reached_at_generation = 0
+    max_reached_value = 0
     
     for ind in population:
         if toolbox.determine_strategy(ind) == COOPERATIVE:
@@ -306,8 +314,8 @@ def eaGambit(population, toolbox, cxpb, mutpb, ngen, stats=None,
             defect_pop += 1
     logbook.record(gen=0, population=len(population), coop_pop=coop_pop, defect_pop=defect_pop)
     
-    if verbose:
-        print(logbook.stream)
+    # if verbose:
+    #     print(logbook.stream)
 
     # Begin the generational process
     for gen in range(1, ngen + 1):
@@ -363,10 +371,27 @@ def eaGambit(population, toolbox, cxpb, mutpb, ngen, stats=None,
             else:
                 defect_pop += 1
                 sample_defect_genes =  ''.join([str(i) for i in ind])
+        if coop_pop > defect_pop:
+            dominant_allele = COOPERATIVE
+        else:
+            dominant_allele = AGGRESIVE
+            
+        population_size = len(population)
+        if max_reached_value < population_size:
+            max_reached_value = population_size
+            max_reached_at_generation = gen
+        
+        if last_dominant_allele != dominant_allele:
+            dominant_allele_switch += 1
+            last_dominant_allele = dominant_allele
+            
 
         # Append the current generation statistics to the logbook
-        logbook.record(gen=gen, population=len(population), coop_pop=coop_pop, defect_pop=defect_pop, sample_coop_genes=sample_coop_genes, sample_defect_genes=sample_defect_genes)
-        if verbose:
+        logbook.record(gen=gen, population=len(population), coop_pop=coop_pop, defect_pop=defect_pop, 
+                       sample_coop_genes=sample_coop_genes, sample_defect_genes=sample_defect_genes,
+                       dominant_allele_switch=dominant_allele_switch, max_reached_at_generation=max_reached_at_generation, 
+                       max_reached_value=max_reached_value)
+        if verbose and False:
             print(logbook.stream)
 
     return population, logbook

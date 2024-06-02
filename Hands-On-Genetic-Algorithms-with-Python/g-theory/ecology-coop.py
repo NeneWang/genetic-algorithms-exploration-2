@@ -35,7 +35,7 @@ precurated_cases = {
         "P_CROSSOVER": 0.0,
         "P_MUTATION": 0.0,
         "RANDOMIZE_SEED": False,
-        "encounterEval": OPTIONS.INCREASING_DIFFICULTY
+        "encounterEval": OPTIONS.PRISON_DILEMA_EVAL
     },
      "be1b.tribal_hunters": {
         "lore": "BE1 Base Case Tribal Hunters",
@@ -48,7 +48,7 @@ precurated_cases = {
         "P_CROSSOVER": 0.0,
         "P_MUTATION": 0.0,
         "RANDOMIZE_SEED": False,
-        "encounterEval": OPTIONS.INCREASING_DIFFICULTY
+        "encounterEval": OPTIONS.PRISON_DILEMA_EVAL
     },
      "be1c.tribal_hunters": {
         "lore": "BE1 variant. Whit a more rewarding setting for coolaboration.",
@@ -61,7 +61,7 @@ precurated_cases = {
         "P_CROSSOVER": 0.0,
         "P_MUTATION": 0.0,
         "RANDOMIZE_SEED": False,
-        "encounterEval": OPTIONS.INCREASING_DIFFICULTY
+        "encounterEval": OPTIONS.PRISON_DILEMA_EVAL
     },
      "be2.nuclear_hunters": {
         "lore": "BE2 Making aggressiveness nuclear",
@@ -74,7 +74,7 @@ precurated_cases = {
         "P_CROSSOVER": 0.0,
         "P_MUTATION": 0.0,
         "RANDOMIZE_SEED": False,
-        "encounterEval": OPTIONS.INCREASING_DIFFICULTY
+        "encounterEval": OPTIONS.PRISON_DILEMA_EVAL
     },
      "be2b.nuclear_hunters": {
         "lore": "BE2 variant | Where being cooperative is many times more rewarding.",
@@ -88,7 +88,7 @@ precurated_cases = {
         "P_CROSSOVER": 0.0,
         "P_MUTATION": 0.0,
         "RANDOMIZE_SEED": False,
-        "encounterEval": OPTIONS.INCREASING_DIFFICULTY,
+        "encounterEval": OPTIONS.PRISON_DILEMA_EVAL,
         "select": OPTIONS.selLiteralToFitness
     },
      "be3.limiting_population": {
@@ -103,7 +103,7 @@ precurated_cases = {
         "P_CROSSOVER": 0.0,
         "P_MUTATION": 0.0,
         "RANDOMIZE_SEED": False,
-        "encounterEval": OPTIONS.INCREASING_DIFFICULTY,
+        "encounterEval": OPTIONS.PRISON_DILEMA_EVAL,
         "select": OPTIONS.selLiteralToFitness
     },
      "be3b.limiting_population": {
@@ -118,7 +118,7 @@ precurated_cases = {
         "P_CROSSOVER": 0.0,
         "P_MUTATION": 0.0,
         "RANDOMIZE_SEED": False,
-        "encounterEval": OPTIONS.INCREASING_DIFFICULTY,
+        "encounterEval": OPTIONS.PRISON_DILEMA_EVAL,
         "select": OPTIONS.selLiteralToFitness
     },
      "be3c.limiting_population": {
@@ -133,7 +133,7 @@ precurated_cases = {
         "P_CROSSOVER": 0.0,
         "P_MUTATION": 0.0,
         "RANDOMIZE_SEED": False,
-        "encounterEval": OPTIONS.INCREASING_DIFFICULTY,
+        "encounterEval": OPTIONS.PRISON_DILEMA_EVAL,
         "select": OPTIONS.selLiteralToFitness,
         "limit_strategy": OPTIONS.INCREASING_DIFFICULTY
     },
@@ -149,7 +149,7 @@ precurated_cases = {
         "P_CROSSOVER": 0,
         "P_MUTATION": 0,
         "RANDOMIZE_SEED": False,
-        "encounterEval": OPTIONS.INCREASING_DIFFICULTY,
+        "encounterEval": OPTIONS.PRISON_DILEMA_EVAL,
         "select": OPTIONS.selLiteralToFitness,
     },
      "be4b.mutation_crossover": {
@@ -164,7 +164,7 @@ precurated_cases = {
         "P_CROSSOVER": 0,
         "P_MUTATION": 0.1,
         "RANDOMIZE_SEED": False,
-        "encounterEval": OPTIONS.INCREASING_DIFFICULTY,
+        "encounterEval": OPTIONS.PRISON_DILEMA_EVAL,
         "select": OPTIONS.selLiteralToFitness,
         "limit_strategy": OPTIONS.INCREASING_DIFFICULTY
     },
@@ -180,7 +180,7 @@ precurated_cases = {
         "P_CROSSOVER": 0,
         "P_MUTATION": 0.1,
         "RANDOMIZE_SEED": False,
-        "encounterEval": OPTIONS.INCREASING_DIFFICULTY,
+        "encounterEval": OPTIONS.PRISON_DILEMA_EVAL,
         "select": OPTIONS.selLiteralToFitness,
         "limit_strategy": OPTIONS.INCREASING_DIFFICULTY
     },
@@ -196,7 +196,7 @@ precurated_cases = {
         "P_CROSSOVER": 0.5,
         "P_MUTATION": 0.1,
         "RANDOMIZE_SEED": False,
-        "encounterEval": OPTIONS.INCREASING_DIFFICULTY,
+        "encounterEval": OPTIONS.PRISON_DILEMA_EVAL,
         "select": OPTIONS.selLiteralToFitness,
         "limit_strategy": OPTIONS.INCREASING_DIFFICULTY
     },
@@ -212,7 +212,7 @@ precurated_cases = {
         "P_CROSSOVER": 0.5,
         "P_MUTATION": 0.1,
         "RANDOMIZE_SEED": False,
-        "encounterEval": OPTIONS.INCREASING_DIFFICULTY,
+        "encounterEval": OPTIONS.PRISON_DILEMA_EVAL,
         "select": OPTIONS.selLiteralToFitness,
         "limit_strategy": OPTIONS.INCREASING_DIFFICULTY,
         "determine_strategy": OPTIONS.determineStrategyWithMajority
@@ -229,7 +229,7 @@ precurated_cases = {
         "P_CROSSOVER": 0.5,
         "P_MUTATION": 0.1,
         "RANDOMIZE_SEED": False,
-        "encounterEval": OPTIONS.INCREASING_DIFFICULTY,
+        "encounterEval": OPTIONS.PRISON_DILEMA_EVAL,
         "select": OPTIONS.selLiteralToFitness,
         "limit_strategy": OPTIONS.INCREASING_DIFFICULTY
     },
