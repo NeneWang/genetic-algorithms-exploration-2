@@ -1,4 +1,4 @@
-,"max_found_at_generation: ","end_mean_fitness_population: ","end_max_fitness: ",initial_population,max_generation,crossover_probability,mutation_probability,selection_method,selection_strategy_name,k_value
+,"max_found_at_generation","end_mean_fitness_population","end_max_fitness",initial_population,max_generation,crossover_probability,mutation_probability,selection_method,selection_strategy_name,k_value
 0,48,961.9,970.0,50,50,0.1,0.1,<function selTournament at 0x00000213A144F520>,Tournament,1
 1,13,965.9,970.0,50,50,0.1,0.1,<function selTournament at 0x00000213A144F520>,Tournament,2
 2,4,858.9,860.0,50,50,0.1,0.1,<function selTournament at 0x00000213A144F520>,Tournament,3
