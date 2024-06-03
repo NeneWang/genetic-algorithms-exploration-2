@@ -152,7 +152,8 @@ def brute_force_sample_experiment():
                                     df_experiments = pd.DataFrame(experiments_arr)
                                     print("================= DF Experiments ====================")
                                     print(df_experiments.head(50))
+                                    df_experiments.to_csv("reports/behavioural_full_partial_experiments.csv")
     # store.
-    df_experiments.to_csv("reports/behavioural_full_experiments.csv")
+    df_experiments.to_csv("reports/behavioural_fullfinished_experiments.csv")
     
 brute_force_sample_experiment()

@@ -393,7 +393,6 @@ class OPTIONS:
     selRankedPaired = selRankedPaired
     selWithRankedPopulationCurved = selWithRankedPopulationCurved
     selLiteralToFitness = selLiteralToFitness
-    selWithRankedPopulationCurved = selWithRankedPopulationCurved
     
     determineStrategyWithDominantRecessive = determineStrategyWithDominantRecessive
     determineStrategyWithMajority = determineStrategyWithMajority
