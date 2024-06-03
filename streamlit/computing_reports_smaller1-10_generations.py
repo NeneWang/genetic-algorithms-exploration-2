@@ -12,7 +12,7 @@ from modules.knapsack_tools import ITEMS_KNAPSACK, MAX_CAPACITY, apply_tournamen
 
 
 populations = [50, 100, 200]
-generations = [x for x in range(10, 40, 1)]
+generations = [x for x in range(1, 10, 1)]
 crossover_probabilities = [x/10 for x in range(1, 5, 1)]
 mutation_probabilities = [x/10 for x in range(1, 5, 1)]
 
@@ -66,7 +66,7 @@ for selection_method in selection_methods:
                         pprint.pprint(experiments)
                         experiments_arr.append(experiments)
 df_experiments = pd.DataFrame(experiments_arr)
-df_experiments.to_csv('reports/knapsack__smallerexperiments.csv')
+df_experiments.to_csv('reports/knapsack__smaller10_experiments.csv')
 df_experiments.head(40)  
     
     
