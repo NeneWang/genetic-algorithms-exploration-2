@@ -18,9 +18,7 @@ FLIPBIT_MUTATION_PROB = 1.0/GEN_SIZE
 
 # set the random seed:
 RANDOM_SEED = 42
-
 REPRODUCTION_LOGIC = "FITNESS_PROPORTIONAL_TORUNAMENT"
-
 
 
 precurated_cases = {
@@ -233,10 +231,6 @@ precurated_cases = {
         "select": OPTIONS.selLiteralToFitness,
         "limit_strategy": OPTIONS.INCREASING_DIFFICULTY
     },
-     
-     
-     
-     
      "be5b.control_limited": {
         "lore": "BE4 variant. With Mutation and Crossover enabled.",
         "both_coop": 5,
@@ -271,7 +265,6 @@ precurated_cases = {
         "select": OPTIONS.selLiteralToFitness,
         "determine_strategy": OPTIONS.determineStrategyWithDominantRecessive
     },
-     
      "be5b.control_limited_increasing": {
         "lore": "BE4 variant. With Mutation and Crossover enabled.",
         "both_coop": 5,
@@ -307,8 +300,6 @@ precurated_cases = {
         "determine_strategy": OPTIONS.determineStrategyWithDominantRecessive
     },
 }
-
-
 
 # population, coop_pop, defect_pop = gambitGeneticSimulation(POPULATION_SIZE=POPULATION_SIZE, P_CROSSOVER=P_CROSSOVER, P_MUTATION=P_MUTATION, FLIPBIT_MUTATION_PROB=FLIPBIT_MUTATION_PROB, MAX_GENERATIONS=MAX_GENERATIONS, POPULATION_LIMIT=POPULATION_LIMIT, GEN_SIZE=GEN_SIZE, RANDOM_SEED=RANDOM_SEED)
 
