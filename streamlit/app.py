@@ -52,15 +52,15 @@ def show_extras():
     icon_row.markdown("### ...")
 
 
-st.markdown(
-    "streamlit-extras is a Python library putting together useful Streamlit bits of code. It"
-    " includes > 40 (count emojis below!) functional or visual additions to Streamlit that will"
-    " make your life easier or your apps nicer. We call them *extras* and anyone's welcome to add"
-    " their owns!"
-)
+# st.markdown(
+#     "streamlit-extras is a Python library putting together useful Streamlit bits of code. It"
+#     " includes > 40 (count emojis below!) functional or visual additions to Streamlit that will"
+#     " make your life easier or your apps nicer. We call them *extras* and anyone's welcome to add"
+#     " their owns!"
+# )
 
 
-show_extras()
+# show_extras()
 
 with col1:
     hasClicked = card(

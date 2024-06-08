@@ -6,4 +6,3 @@ pandas
 scipy
 streamlit
 streamlit_extras
-stramlit_card

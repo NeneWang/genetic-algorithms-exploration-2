@@ -7,7 +7,16 @@ The purpose of this simulation is to explore the applications of genetic algorit
 This project is intded to be used in coordination with the report at:
 https://hackmd.io/@n_1IfOpxQPSjyRrn5yedJw/r1fbS-RZC
 
-## Setup
+## Running Web Simulator Locally
+
+
+```
+cd streamlit
+pip install -r requirements.txt
+streamlit run app.py
+```
+
+
 
 
 
