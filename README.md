@@ -16,8 +16,8 @@ pip install -r requirements.txt
 streamlit run app.py
 ```
 
+![](./img/2024-06-08-14-32-45.png)
 
-
-
+![](./img/2024-06-08-14-33-11.png)
 
 
