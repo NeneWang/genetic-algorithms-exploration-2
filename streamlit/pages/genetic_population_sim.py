@@ -328,7 +328,7 @@ def run_simulation():
 
 # Run simulation button
 if st.button("Run Simulation"):
-    population, coop_pop, defect_pop = run_simulation()
+    population, coop_pop, defect_pop, logbook = run_simulation()
     
     # Plot results
     fig, ax = plt.subplots()
