@@ -216,10 +216,6 @@ precurated_cases = {
         "select": OPTIONS.selLiteralToFitness,
         "limit_strategy": OPTIONS.INCREASING_DIFFICULTY
     },
-     
-     
-     
-     
      "be5b.control_limited": {
         "lore": "BE4 variant. With Mutation and Crossover enabled.",
         "both_coop": 5,
